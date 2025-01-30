@@ -88,6 +88,18 @@ class snakeCVclass:
             self.currentLength += distance
             self.headPrevious = currentX, currentY
 
+            # Check if snake eats the bomb food (Game Over)
+            foodX, foodY = self.foodLocation
+            if (foodX - self.foodWidth // 2 < currentX < foodX + self.foodWidth // 2 and
+                    foodY - self.foodHeight // 2 < currentY < foodY + self.foodHeight // 2):
+                if self.currentFood == "bomb.png":
+                    self.gameOver = True  # End game if bomb is eaten
+                else:
+                    self.FoodLocationRandom()
+                    self.TotalAllowedLength += 50
+                    self.score += 1
+                    print(self.score)
+
             # Reducing Length if current length exceeds the allowed length
             if self.currentLength > self.TotalAllowedLength:
                 for i, length in enumerate(self.length):
