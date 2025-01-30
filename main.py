@@ -36,16 +36,16 @@ class snakeCVclass:
     def update(self, mainIMG, headCurrent):
 
         if self.gameOver:
-            restartX, restartY, restartW, restartH = 500, 100, 300, 80  # Button (x, y, width, height)
+            restartX, restartY, restartW, restartH = 450, 100, 300, 80  # Button (x, y, width, height)
             cvzone.putTextRect(mainIMG, "Game Over", [250, 350], scale=8, thickness=4, colorT=(255, 255, 255),
                            colorR=(0, 0, 255), offset=20)
             
-            cvzone.putTextRect(mainIMG, f'Your Score: {self.score}', [250, 500], scale=8, thickness=5,
+            cvzone.putTextRect(mainIMG, f'Your Score: {self.score}', [150, 500], scale=8, thickness=5,
                            colorT=(255, 255, 255), colorR=(233, 161, 16), offset=20)
             
             # Draw Restart Button
             cv2.rectangle(mainIMG, (restartX, restartY), (restartX + restartW, restartY + restartH), (0, 255, 0), cv2.FILLED)
-            cvzone.putTextRect(mainIMG, "Restart", [restartX + 40, restartY + 55], scale=3, thickness=3, colorT=(255, 255, 255), colorR=(0, 255, 0))
+            cvzone.putTextRect(mainIMG, "Restart", [restartX + 45, restartY + 55], scale=3, thickness=3, colorT=(255, 255, 255), colorR=(0, 255, 0))
             
             # Check if user touches the button
             currentX, currentY = headCurrent
@@ -129,18 +129,18 @@ class snakeCVclass:
         return mainIMG
 
 
-game = snakeCVclass("guava.png")
+game = snakeCVclass("apple.png")
 restart_game = False
 
 while True:
     success, img = capture.read()  # Read a frame from the video capture
     img = cv2.flip(img, 1)  # Flip the camera horizontally
-    hand, img = detect.findHands(img, flipType=False)  # Detect hands in the camera
+    hand, img = detect.findHands(img, flipType=False, draw=False)  # Detect hands in the camera  ( draw=False  -> Disables cvzone’s drawing on the hand)
 
     if hand:
         landmarkList = hand[0]['lmList']  # Get the landmark list for the detected hand
-        pointIndex = landmarkList[8][0:2]  # Get the location of the index finger tip
-        img = game.update(img, pointIndex)
+        pointIndex = landmarkList[8][0:2]  # Get the location of the index finger tip (x, y)
+        img = game.update(img, pointIndex) # Update game
 
     cv2.imshow("Image", img)
     key = cv2.waitKey(1)
@@ -150,7 +150,7 @@ while True:
         restart_game = True
 
     if restart_game:
-        game = snakeCVclass("guava.png")  # Create a new instance of the game object
+        game = snakeCVclass("apple.png")  # Create a new instance of the game object
         restart_game = False
 
     if key == ord('q'):
