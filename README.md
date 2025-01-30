@@ -1,2 +1,2 @@
-# Motion detection SnakeGame
+# Motion Detection SnakeGame
 computer vision

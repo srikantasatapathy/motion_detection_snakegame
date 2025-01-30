@@ -36,14 +36,17 @@ class snakeCVclass:
     def update(self, mainIMG, headCurrent):
 
         if self.gameOver:
+            restartX, restartY, restartW, restartH = 500, 100, 300, 80  # Button (x, y, width, height)
             cvzone.putTextRect(mainIMG, "Game Over", [250, 350], scale=8, thickness=4, colorT=(255, 255, 255),
                            colorR=(0, 0, 255), offset=20)
+            
             cvzone.putTextRect(mainIMG, f'Your Score: {self.score}', [250, 500], scale=8, thickness=5,
-                           colorT=(255, 255, 255), colorR=(0, 0, 255), offset=20)
+                           colorT=(255, 255, 255), colorR=(233, 161, 16), offset=20)
+            
             # Draw Restart Button
-            restartX, restartY, restartW, restartH = 500, 100, 300, 80  # Button (x, y, width, height)
             cv2.rectangle(mainIMG, (restartX, restartY), (restartX + restartW, restartY + restartH), (0, 255, 0), cv2.FILLED)
             cvzone.putTextRect(mainIMG, "Restart", [restartX + 40, restartY + 55], scale=3, thickness=3, colorT=(255, 255, 255), colorR=(0, 255, 0))
+            
             # Check if user touches the button
             currentX, currentY = headCurrent
             if restartX < currentX < restartX + restartW and restartY < currentY < restartY + restartH:
@@ -94,9 +97,9 @@ class snakeCVclass:
             if self.point:
                 for i, point in enumerate(self.point):
                     if i != 0:
-                        cv2.line(mainIMG, self.point[i - 1], self.point[i], (500, 500, 255),
-                                 20)  # cv2.line(image, start_point, end_point, color, thickness)
-                cv2.circle(img, self.point[-1], 20, (200, 0, 200), cv2.FILLED)
+                        cv2.line(mainIMG, self.point[i - 1], self.point[i], (233, 161, 16),
+                                 20)  # cv2.line(image, start_point, end_point, color, thickness) color combination BGR
+                cv2.circle(img, self.point[-1], 20, (67, 202, 9), cv2.FILLED)
 
             # collision check
             point = np.array(self.point[:-2], np.int32)
@@ -121,7 +124,7 @@ class snakeCVclass:
                                         (randomX - self.foodWidth // 2, randomY - self.foodHeight // 2))
 
             # showScore
-            cvzone.putTextRect(mainIMG, f'Your Score :{self.score}', [50, 80], scale=3, thickness=3, offset=10)
+            cvzone.putTextRect(mainIMG, f'Your Score :{self.score}', [20, 40], scale=1, thickness=1, offset=10,colorT=(255,255,255), colorR=(233, 161, 16),font=cv2.FONT_HERSHEY_DUPLEX)  # color combination BGR  not RGB
 
         return mainIMG
 
