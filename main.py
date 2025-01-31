@@ -49,9 +49,17 @@ class snakeCVclass:
 
         self.score = 0  # Game score
         self.gameOver = False  # Check if game is over
+        # implement the Push state
+        self.isPaused = False  # New pause state
+        self.pauseStartTime = 0  # To track when pause started
+        self.totalPausedTime = 0  # To track total paused time
 
         # Timer for food relocation
         self.foodTimer = time.time()  # Start the timer
+
+        # Position of Push and Resume Button positions for top right corner
+        self.pauseButton = {"x": 1000, "y": 20, "w": 100, "h": 40}  # Moved to right side
+        self.resumeButton = {"x": 1120, "y": 20, "w": 100, "h": 40}  # Moved to right side
 
     # set the food location
     # Randomly place food in a new location
@@ -62,7 +70,50 @@ class snakeCVclass:
         self.foodHeight, self.foodWidth, _ = self.foodIMG.shape  # Update size
         self.foodTimer = time.time()  # Reset the timer
 
+    # Draw the Pause and Resume buttons
+    def drawButtons(self, mainIMG):
+        # Only draw buttons if game is not over
+        if not self.gameOver:
+            # Draw Pause button
+            cvzone.putTextRect(mainIMG, "Pause", 
+                              [self.pauseButton["x"] + 5, self.pauseButton["y"] + 25],
+                              scale=1, thickness=2,
+                              colorT=(255, 255, 255),
+                              colorR=(19, 224, 239) if not self.isPaused else (128, 128, 128),
+                              offset=10,
+                              font=cv2.FONT_HERSHEY_DUPLEX)
+
+            # Draw Resume button
+            cvzone.putTextRect(mainIMG, "Resume",
+                              [self.resumeButton["x"] + 10, self.resumeButton["y"] + 25],
+                              scale=1, thickness=2,
+                              colorT=(255, 255, 255),
+                              colorR=(0, 255, 0) if self.isPaused else (128, 128, 128),
+                              offset=10,
+                              font=cv2.FONT_HERSHEY_DUPLEX)
+
+    # Check the Push and Resume buttons Press or not
+    def checkButtonPress(self, x, y):
+        # Check Pause button
+        if (self.pauseButton["x"] < x < self.pauseButton["x"] + self.pauseButton["w"] and
+            self.pauseButton["y"] < y < self.pauseButton["y"] + self.pauseButton["h"] and
+            not self.isPaused):
+            self.isPaused = True
+            self.pauseStartTime = time.time()
+            return True
+
+        # Check Resume button
+        if (self.resumeButton["x"] < x < self.resumeButton["x"] + self.resumeButton["w"] and
+            self.resumeButton["y"] < y < self.resumeButton["y"] + self.resumeButton["h"] and
+            self.isPaused):
+            self.isPaused = False
+            self.totalPausedTime += time.time() - self.pauseStartTime
+            return True
+
+        return False
+
     def update(self, mainIMG, headCurrent):
+        self.drawButtons(mainIMG)  # Draw buttons
 
         if self.gameOver:
             restartX, restartY, restartW, restartH = 450, 100, 300, 80  # Button (x, y, width, height)
@@ -86,9 +137,44 @@ class snakeCVclass:
                 self.currentLength = 0
                 self.TotalAllowedLength = 150
                 self.headPrevious = 0, 0
+                self.isPaused = False
+                self.totalPausedTime = 0
                 self.FoodLocationRandom()
             
         else:
+            # Add the Push and Resume button functionality
+            currentX, currentY = headCurrent
+            
+            # Check for button presses
+            if self.checkButtonPress(currentX, currentY):
+                return mainIMG
+
+            # If game is paused, don't update game state
+            if self.isPaused:
+                # Draw existing snake
+                if self.point:
+                    for i, point in enumerate(self.point):
+                        if i != 0:
+                            cv2.line(mainIMG, self.point[i - 1], self.point[i], (233, 161, 16), 20)
+                    cv2.circle(mainIMG, self.point[-1], 20, (67, 202, 9), cv2.FILLED)
+
+                # Draw food at current location
+                foodX, foodY = self.foodLocation
+                mainIMG = cvzone.overlayPNG(mainIMG, self.foodIMG, 
+                                          (foodX - self.foodWidth // 2, foodY - self.foodHeight // 2))
+                
+                # Draw score
+                cvzone.putTextRect(mainIMG, f'Your Score: {self.score}', [20, 40], scale=1, thickness=1,
+                               offset=10, colorT=(255,255,255), colorR=(233, 161, 16),
+                               font=cv2.FONT_HERSHEY_DUPLEX)
+                
+                # Draw "PAUSED" text
+                cvzone.putTextRect(mainIMG, "PAUSED", [550, 360], scale=1, thickness=2,
+                               colorT=(255, 255, 255), colorR=(0, 0, 255),font=cv2.FONT_HERSHEY_DUPLEX)
+                
+                return mainIMG
+            # End the functionality of Push and Resume button 
+
             # Break down the previous and current points location to x and y
             previousX, previousY = self.headPrevious
             currentX, currentY = headCurrent
@@ -127,6 +213,7 @@ class snakeCVclass:
                     # Check if the current length has become less than the total allowed length
                     if self.currentLength < self.TotalAllowedLength:
                         break
+            
             # Get food position
             foodX, foodY = self.foodLocation
 
@@ -138,8 +225,9 @@ class snakeCVclass:
                 self.TotalAllowedLength += 50
                 self.score += 1
                 print(self.score)
-            # If food has been there for more than 3 seconds, relocate it
-            if time.time() - self.foodTimer > 3:
+
+            # If food has been there for more than 3 seconds, relocate it with check food timer if not paused
+            if not self.isPaused and time.time() - self.foodTimer - self.totalPausedTime > 3:
                 self.FoodLocationRandom()
 
             # Draw the snake line
@@ -167,6 +255,8 @@ class snakeCVclass:
                 self.currentLength = 0
                 self.TotalAllowedLength = 150
                 self.headPrevious = 0, 0
+                self.isPaused = False   # add for push functionality
+                self.totalPausedTime = 0  # add for push functionality
                 self.FoodLocationRandom()
 
             # Draw food
