@@ -5,7 +5,20 @@ import math
 import random
 from cvzone.HandTrackingModule import HandDetector
 import time
+import pygame  # Add pygame for sound
 
+
+# Initialize pygame mixer for sound
+pygame.mixer.init()
+
+# Load sound effects
+try:
+    eat_sound = pygame.mixer.Sound("apple.mp3")  # Sound for eating regular food
+    bomb_sound = pygame.mixer.Sound("bomb.mp3")  # Sound for eating bomb
+except:
+    print("Warning: Sound files not found. Please ensure 'eat.wav' and 'bomb.wav' exist in the same directory.")
+    eat_sound = None
+    bomb_sound = None
 
 # setup openCV capture and window size
 capture = cv2.VideoCapture(0)
@@ -93,8 +106,12 @@ class snakeCVclass:
             if (foodX - self.foodWidth // 2 < currentX < foodX + self.foodWidth // 2 and
                     foodY - self.foodHeight // 2 < currentY < foodY + self.foodHeight // 2):
                 if self.currentFood == "bomb.png":
+                    if bomb_sound:  # Play bomb sound
+                        bomb_sound.play()
                     self.gameOver = True  # End game if bomb is eaten
                 else:
+                    if eat_sound:  # Play eating sound
+                        eat_sound.play()
                     self.FoodLocationRandom()
                     self.TotalAllowedLength += 50
                     self.score += 1
@@ -141,6 +158,8 @@ class snakeCVclass:
 
             # check if the collision happens
             if -1 <= minDist <= 1:
+                if bomb_sound:  # Play bomb sound
+                    bomb_sound.play()
                 print("hit")
                 self.gameOver = True
                 self.point = []
@@ -185,3 +204,7 @@ while True:
 
     if key == ord('q'):
         break
+# Clean up
+pygame.mixer.quit()
+cv2.destroyAllWindows()
+capture.release()
