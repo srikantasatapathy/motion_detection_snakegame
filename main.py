@@ -13,10 +13,10 @@ pygame.mixer.init()
 
 # Load sound effects
 try:
-    eat_sound = pygame.mixer.Sound("apple.mp3")  # Sound for eating regular food
+    eat_sound = pygame.mixer.Sound("eat.mp3")  # Sound for eating regular food
     bomb_sound = pygame.mixer.Sound("bomb.mp3")  # Sound for eating bomb
 except:
-    print("Warning: Sound files not found. Please ensure 'apple.mp3' and 'bomb.mp3' exist in the same directory.")
+    print("Warning: Sound files not found. Please ensure 'eat.mp3' and 'bomb.mp3' exist in the same directory.")
     eat_sound = None
     bomb_sound = None
 
