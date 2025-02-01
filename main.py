@@ -13,12 +13,24 @@ pygame.mixer.init()
 
 # Load sound effects
 try:
-    eat_sound = pygame.mixer.Sound("eat.mp3")  # Sound for eating regular food
-    bomb_sound = pygame.mixer.Sound("bomb.mp3")  # Sound for eating bomb
+   # Sound effects for each food
+    food_sounds = {
+        "apple.png": pygame.mixer.Sound("apple.mp3"),
+        "guava.png": pygame.mixer.Sound("guava.mp3"),
+        "mushroom.png": pygame.mixer.Sound("mushroom.mp3"),
+        "grape.png": pygame.mixer.Sound("grape.mp3"),
+        "orange.png": pygame.mixer.Sound("orange.mp3"),
+        "redchili.png": pygame.mixer.Sound("redchili.mp3"),
+        "strawberry.png": pygame.mixer.Sound("strawberry.mp3"),
+        "bomb.png": pygame.mixer.Sound("bomb.mp3")
+    }
+    sound_loaded = True
+
 except:
-    print("Warning: Sound files not found. Please ensure 'eat.mp3' and 'bomb.mp3' exist in the same directory.")
-    eat_sound = None
-    bomb_sound = None
+    print("Warning: Some sound files are missing. Please ensure all sound files exist in the same directory:")
+    print("Required files: apple.mp3, guava.mp3, mushroom.mp3, grape.mp3, orange.mp3, redchili.mp3, strawberry.mp3, bomb.wav")
+    sound_loaded = False
+    food_sounds = {}
 
 # setup openCV capture and window size
 capture = cv2.VideoCapture(0)
@@ -70,8 +82,14 @@ class snakeCVclass:
         self.foodTimer = time.time()  # Start the timer
 
         # Position of Push and Resume Button positions for top right corner
-        self.pauseButton = {"x": 1000, "y": 20, "w": 100, "h": 40}  # Moved to right side
+        self.pauseButton = {"x": 1000, "y": 20, "w": 100, "h": 40}  # Moved to right side 
         self.resumeButton = {"x": 1120, "y": 20, "w": 100, "h": 40}  # Moved to right side
+
+    # Play the corresponding sound for the food type
+    def playFoodSound(self, foodType):
+        """Play the corresponding sound for the food type"""
+        if sound_loaded and foodType in food_sounds:
+            food_sounds[foodType].play()
 
     # Update the score
     def updateScore(self, foodType):
@@ -214,13 +232,12 @@ class snakeCVclass:
             foodX, foodY = self.foodLocation
             if (foodX - self.foodWidth // 2 < currentX < foodX + self.foodWidth // 2 and
                     foodY - self.foodHeight // 2 < currentY < foodY + self.foodHeight // 2):
+                # Play the corresponding food sound
+                self.playFoodSound(self.currentFood)
+
                 if self.currentFood == "bomb.png":
-                    if bomb_sound:  # Play bomb sound
-                        bomb_sound.play()
                     self.gameOver = True  # End game if bomb is eaten
                 else:
-                    if eat_sound:  # Play eating sound
-                        eat_sound.play()
                     self.updateScore(self.currentFood)  # Update score based on food type
                     self.FoodLocationRandom()
                     self.TotalAllowedLength += 50
@@ -271,8 +288,7 @@ class snakeCVclass:
 
             # check if the collision happens
             if -1 <= minDist <= 1:
-                if bomb_sound:  # Play bomb sound
-                    bomb_sound.play()
+                self.playFoodSound("bomb.png")
                 print("hit")
                 self.gameOver = True
                 self.point = []
