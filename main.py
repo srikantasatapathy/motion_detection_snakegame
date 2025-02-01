@@ -16,7 +16,7 @@ try:
     eat_sound = pygame.mixer.Sound("apple.mp3")  # Sound for eating regular food
     bomb_sound = pygame.mixer.Sound("bomb.mp3")  # Sound for eating bomb
 except:
-    print("Warning: Sound files not found. Please ensure 'eat.wav' and 'bomb.wav' exist in the same directory.")
+    print("Warning: Sound files not found. Please ensure 'apple.mp3' and 'bomb.mp3' exist in the same directory.")
     eat_sound = None
     bomb_sound = None
 
@@ -42,6 +42,18 @@ class snakeCVclass:
         self.currentFood = random.choice(self.foodNames)  # Pick a random food to start
         self.foodIMG = self.foodImages[self.currentFood]
 
+        # Define scoring rules for each food
+        self.foodScores = {
+            "apple.png": 1,
+            "guava.png": 1,
+            "mushroom.png": 1,
+            "grape.png": 1,
+            "orange.png": 3,
+            "strawberry.png": 5,
+            "redchili.png": -2,  # Negative score for chili
+            "bomb.png": 0  # Bomb ends game, no score
+        }
+
         # Get food image size
         self.foodHeight, self.foodWidth, _ = self.foodIMG.shape
         self.foodLocation = 0, 0  # Food position
@@ -60,6 +72,17 @@ class snakeCVclass:
         # Position of Push and Resume Button positions for top right corner
         self.pauseButton = {"x": 1000, "y": 20, "w": 100, "h": 40}  # Moved to right side
         self.resumeButton = {"x": 1120, "y": 20, "w": 100, "h": 40}  # Moved to right side
+
+    # Update the score
+    def updateScore(self, foodType):
+        """Update score based on food type"""
+        if foodType == "redchili.png":
+            if self.score <= 1:
+                self.score = 0
+            else:
+                self.score = max(0, self.score - 2)  # Ensure score doesn't go below 0
+        else:
+            self.score += self.foodScores[foodType]
 
     # set the food location
     # Randomly place food in a new location
@@ -198,10 +221,12 @@ class snakeCVclass:
                 else:
                     if eat_sound:  # Play eating sound
                         eat_sound.play()
+                    self.updateScore(self.currentFood)  # Update score based on food type
                     self.FoodLocationRandom()
                     self.TotalAllowedLength += 50
-                    self.score += 1
-                    print(self.score)
+                    # self.score += 1   # remove because each food has its own score
+                    print(f"Score: {self.score}")
+
 
             # Reducing Length if current length exceeds the allowed length
             if self.currentLength > self.TotalAllowedLength:
@@ -268,7 +293,7 @@ class snakeCVclass:
         return mainIMG
 
 
-game = snakeCVclass(["apple.png", "guava.png", "mushroom.png", "bomb.png"])
+game = snakeCVclass(["apple.png", "guava.png", "mushroom.png", "bomb.png","grape.png","orange.png","redchili.png","strawberry.png"])
 restart_game = False
 
 while True:
@@ -289,7 +314,7 @@ while True:
         restart_game = True
 
     if restart_game:
-        game = snakeCVclass(["apple.png", "guava.png", "mushroom.png", "bomb.png"])  # Create a new instance of the game object
+        game = snakeCVclass(["apple.png", "guava.png", "mushroom.png", "bomb.png","grape.png","orange.png","redchili.png","strawberry.png"])  # Create a new instance of the game object
         restart_game = False
 
     if key == ord('q'):
