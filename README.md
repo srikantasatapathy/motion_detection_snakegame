@@ -33,11 +33,18 @@ Interesting features:
 * The game can be restarted by pressing 'r' or touching the restart button
 * The game can be quit by pressing 'q'
 
-Install required libraries 
+Installation
 ===========================
+step 1 => python3 -m venv venv 
+step 2 => source venv/bin/activate
 
+Step 3
+Required libraries 
+--------------------
 pip install opencv-python
 pip install cvzone              # Provides useful computer vision utilities.
 pip install numpy               # Used for numerical operations, particularly for handling points.
 pip install mediapipe
 pip install pygame              # Add pygame for sound
+
+Step 4 => python3 main.py
