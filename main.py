@@ -15,14 +15,14 @@ pygame.mixer.init()
 try:
    # Sound effects for each food
     food_sounds = {
-        "apple.png": pygame.mixer.Sound("apple.mp3"),
-        "guava.png": pygame.mixer.Sound("guava.mp3"),
-        "mushroom.png": pygame.mixer.Sound("mushroom.mp3"),
-        "grape.png": pygame.mixer.Sound("grape.mp3"),
-        "orange.png": pygame.mixer.Sound("orange.mp3"),
-        "redchili.png": pygame.mixer.Sound("redchili.mp3"),
-        "strawberry.png": pygame.mixer.Sound("strawberry.mp3"),
-        "bomb.png": pygame.mixer.Sound("bomb.mp3")
+        "assets/images/apple.png": pygame.mixer.Sound("assets/sound/apple.mp3"),
+        "assets/images/guava.png": pygame.mixer.Sound("assets/sound/guava.mp3"),
+        "assets/images/mushroom.png": pygame.mixer.Sound("assets/sound/mushroom.mp3"),
+        "assets/images/grape.png": pygame.mixer.Sound("assets/sound/grape.mp3"),
+        "assets/images/orange.png": pygame.mixer.Sound("assets/sound/orange.mp3"),
+        "assets/images/redchili.png": pygame.mixer.Sound("assets/sound/redchili.mp3"),
+        "assets/images/strawberry.png": pygame.mixer.Sound("assets/sound/strawberry.mp3"),
+        "assets/images/bomb.png": pygame.mixer.Sound("assets/sound/bomb.mp3")
     }
     sound_loaded = True
 
@@ -56,14 +56,14 @@ class snakeCVclass:
 
         # Define scoring rules for each food
         self.foodScores = {
-            "apple.png": 1,
-            "guava.png": 1,
-            "mushroom.png": 1,
-            "grape.png": 1,
-            "orange.png": 3,
-            "strawberry.png": 5,
-            "redchili.png": -2,  # Negative score for chili
-            "bomb.png": 0  # Bomb ends game, no score
+            "assets/images/apple.png": 1,
+            "assets/images/guava.png": 1,
+            "assets/images/mushroom.png": 1,
+            "assets/images/grape.png": 1,
+            "assets/images/orange.png": 3,
+            "assets/images/strawberry.png": 5,
+            "assets/images/redchili.png": -2,  # Negative score for chili
+            "assets/images/bomb.png": 0  # Bomb ends game, no score
         }
 
         # Get food image size
@@ -94,7 +94,7 @@ class snakeCVclass:
     # Update the score
     def updateScore(self, foodType):
         """Update score based on food type"""
-        if foodType == "redchili.png":
+        if foodType == "assets/images/redchili.png":
             if self.score <= 1:
                 self.score = 0
             else:
@@ -235,7 +235,7 @@ class snakeCVclass:
                 # Play the corresponding food sound
                 self.playFoodSound(self.currentFood)
 
-                if self.currentFood == "bomb.png":
+                if self.currentFood == "assets/images/bomb.png":
                     self.gameOver = True  # End game if bomb is eaten
                 else:
                     self.updateScore(self.currentFood)  # Update score based on food type
@@ -288,7 +288,7 @@ class snakeCVclass:
 
             # check if the collision happens
             if -1 <= minDist <= 1:
-                self.playFoodSound("bomb.png")
+                self.playFoodSound("assets/images/bomb.png")
                 print("hit")
                 self.gameOver = True
                 self.point = []
@@ -309,7 +309,7 @@ class snakeCVclass:
         return mainIMG
 
 
-game = snakeCVclass(["apple.png", "guava.png", "mushroom.png", "bomb.png","grape.png","orange.png","redchili.png","strawberry.png"])
+game = snakeCVclass(["assets/images/apple.png", "assets/images/guava.png", "assets/images/mushroom.png", "assets/images/bomb.png","assets/images/grape.png","assets/images/orange.png","assets/images/redchili.png","assets/images/strawberry.png"])
 restart_game = False
 
 while True:
@@ -330,7 +330,7 @@ while True:
         restart_game = True
 
     if restart_game:
-        game = snakeCVclass(["apple.png", "guava.png", "mushroom.png", "bomb.png","grape.png","orange.png","redchili.png","strawberry.png"])  # Create a new instance of the game object
+        game = snakeCVclass(["assets/images/apple.png", "assets/images/guava.png", "assets/images/mushroom.png", "assets/images/bomb.png","assets/images/grape.png","assets/images/orange.png","assets/images/redchili.png","assets/images/strawberry.png"])  # Create a new instance of the game object
         restart_game = False
 
     if key == ord('q'):
